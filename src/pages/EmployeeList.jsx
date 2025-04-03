@@ -67,10 +67,10 @@ const EmployeeList = () => {
     return matchesSearch && matchesDepartment;
   });
 
-  // Get unique departments for the filter
+
   const departments = [...new Set(employees.map((emp) => emp.department))];
 
-  // Status badge color mapping
+// coloring the badge
   const getStatusColor = (status) => {
     switch (status) {
       case "Active":
@@ -93,7 +93,7 @@ const EmployeeList = () => {
             <CardDescription>Manage your company's employees</CardDescription>
           </div>
           <Button
-            onClick={() => navigate("/employees/create")}
+            onClick={() => navigate("/dashboard/employees/create")}
             className="primary-btn flex items-center "
           >
             <Plus className=" mr-2 h-4 w-4" /> Add Employee
@@ -127,7 +127,7 @@ const EmployeeList = () => {
         </div>
 
         {isLoading ? (
-          <Spinner className="h-50 w-50"/>
+          <Spinner className="h-50 w-50" />
         ) : error ? (
           <div className="text-center py-4 text-red-500">
             Error loading employees
@@ -156,7 +156,7 @@ const EmployeeList = () => {
                     <TableRow
                       key={employee._id}
                       className="cursor-pointer hover:bg-gray-50"
-                      onClick={() => navigate(`/employees/${employee._id}`)}
+                      onClick={() => navigate(`/dashboard/employees/${employee._id}`)}
                     >
                       <TableCell className="font-medium">
                         {employee.firstName} {employee.lastName}
@@ -182,7 +182,7 @@ const EmployeeList = () => {
                             <DropdownMenuItem
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/employees/${employee._id}/edit`);
+                                navigate(`/dashboard/employees/${employee._id}/edit`);
                               }}
                             >
                               <FileEdit className="mr-2 h-4 w-4" />

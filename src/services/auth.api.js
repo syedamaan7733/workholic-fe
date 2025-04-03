@@ -1,4 +1,3 @@
-// src/services/auth.api.js
 import axios from "axios";
 import { URL } from "./employeeService";
 import { authToken } from "./token.service";

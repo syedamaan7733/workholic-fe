@@ -41,13 +41,13 @@ const EmployeeForm = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isEditMode = !!id;
-  const [file, setfile] = useState(null);
 
   // // --------------------------------------------------------
   // const [imageUrl, setImageUrl] = useState("");
   // const [isLoading, setIsLoading] = useState(false);
   // const [error, setError] = useState("");
   const fileInputRef = React.useRef(null);
+
   // // --------------------------------------------------------
 
   // Fetch employee data if in edit mode
@@ -56,7 +56,7 @@ const EmployeeForm = () => {
     queryFn: () => getEmployeeById(id),
     enabled: isEditMode,
     onSuccess: (data) => {
-      // Format the date to YYYY-MM-DD for the input field
+      //  formatted date
       const formattedDate = data.hireDate
         ? new Date(data.hireDate).toISOString().split("T")[0]
         : "";
@@ -64,15 +64,14 @@ const EmployeeForm = () => {
       setFormData({
         ...data,
         hireDate: formattedDate,
-        // Convert numeric salary to string for form input
+
         salary: data.salary.toString(),
       });
     },
   });
-  // State to store form data
-  const [formData, setFormData] = isEditMode
-    ? useState({ ...employeeData })
-    : useState({
+  const initalValue = isEditMode
+    ? { ...employeeData }
+    : {
         firstName: "",
         lastName: "",
         email: "",
@@ -91,18 +90,26 @@ const EmployeeForm = () => {
         },
         skills: [],
         projects: [],
-      });
+      };
+  // form data state
+  const [formData, setFormData] = useState(initalValue);
+  const [sNpString, setsNpString] = useState({
+    skillsString: employeeData?.skills ? employeeData.skills.join(" ,") : "",
+    projectsString: employeeData?.projects
+      ? employeeData.projects.join(" ,")
+      : "",
+  });
 
   // Create employee mutation
   const createMutation = useMutation({
-    mutationFn: createEmployee,
+    mutationFn: (submissionData) => createEmployee(submissionData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       toast({
         title: "Success",
         description: "Employee created successfully",
       });
-      navigate("/employees");
+      navigate("/dashboard/employees");
     },
     onError: (error) => {
       toast({
@@ -123,7 +130,7 @@ const EmployeeForm = () => {
         title: "Success",
         description: "Employee updated successfully",
       });
-      navigate(`/employees/${id}`);
+      navigate(`/dashboard/employees/${id}`);
     },
     onError: (error) => {
       toast({
@@ -134,12 +141,11 @@ const EmployeeForm = () => {
     },
   });
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name.includes(".")) {
-      // Handle nested objects like emergencyContact.name
+      //handling the nested object
       const [parent, child] = name.split(".");
       setFormData({
         ...formData,
@@ -156,7 +162,6 @@ const EmployeeForm = () => {
     }
   };
 
-  // Handle select changes
   const handleSelectChange = (name, value) => {
     setFormData({
       ...formData,
@@ -164,7 +169,6 @@ const EmployeeForm = () => {
     });
   };
 
-  // Handle skills input (comma-separated)
   const handleSkillsChange = (e) => {
     const skillsString = e.target.value;
     const skillsArray = skillsString
@@ -172,19 +176,29 @@ const EmployeeForm = () => {
       .map((skill) => skill.trim())
       .filter(Boolean);
 
+    setsNpString({
+      ...sNpString,
+      skillsString: skillsString,
+    });
+
     setFormData({
       ...formData,
       skills: skillsArray,
     });
   };
 
-  // Handle projects input (comma-separated)
   const handleProjectsChange = (e) => {
     const projectsString = e.target.value;
     const projectsArray = projectsString
       .split(",")
       .map((project) => project.trim())
       .filter(Boolean);
+
+    // Update the string state correctly
+    setsNpString({
+      ...sNpString,
+      projectsString: projectsString,
+    });
 
     setFormData({
       ...formData,
@@ -196,7 +210,6 @@ const EmployeeForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!formData.firstName || !formData.lastName || !formData.email) {
       toast({
         variant: "destructive",
@@ -206,11 +219,11 @@ const EmployeeForm = () => {
       return;
     }
 
-    // Prepare submission data - convert string salary to number
     const submissionData = {
       ...formData,
       salary: parseFloat(formData.salary) || 0,
     };
+    console.log(submissionData);
 
     if (isEditMode) {
       updateMutation.mutate({ id, data: submissionData });
@@ -219,11 +232,11 @@ const EmployeeForm = () => {
     }
   };
 
-  // Generate skills string for input field
-  const skillsString = formData.skills ? formData.skills.join(", ") : "";
+  // // Generate skills string for input field
+  // const skillsString = formData.skills ? formData.skills.join(", ") : "";
 
-  // Generate projects string for input field
-  const projectsString = formData.projects ? formData.projects.join(", ") : "";
+  // // Generate projects string for input field
+  // const projectsString = formData.projects ? formData.projects.join(", ") : "";
 
   if (isEditMode && isLoadingEmployee) {
     return <div className="text-center py-4">Loading employee data...</div>;
@@ -233,17 +246,12 @@ const EmployeeForm = () => {
   const uploadMutation = useMutation({
     mutationFn: (fileToUpload) => uploadImage(fileToUpload),
     onSuccess: (imgLink) => {
-      setFormData({ ...formData, imageUrl: imgLink });
-      // toast({
-      //   description: "Image has been uploaded.",
-      // });
+      toast.success("Uploaded...");
+      setFormData({ ...formData, imageUrl: imgLink[0] });
     },
     onError: (err) => {
-      console.log("errro happens during uploading");
-      // toast({
-      //   variant: "destructive",
-      //   description: "Uploading failed. Try again later.",
-      // });
+      console.log("errro happens during uploading", err);
+      toast.error("Uploading failed. Try again later.");
     },
   });
 
@@ -282,7 +290,11 @@ const EmployeeForm = () => {
             variant="ghost"
             size="sm"
             onClick={() =>
-              navigate(isEditMode ? `/employees/${id}` : "/employees")
+              navigate(
+                isEditMode
+                  ? `/dashboard/employees/${id}`
+                  : "/dashboard/employees"
+              )
             }
             className="mr-4 p-0"
           >
@@ -357,7 +369,7 @@ const EmployeeForm = () => {
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
-          {/* Personal Information Section */}
+          {/* Personal info */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Personal Information</h3>
 
@@ -429,7 +441,7 @@ const EmployeeForm = () => {
             </div>
           </div>
 
-          {/* Work Information Section */}
+          {/* Work infgo */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Work Information</h3>
 
@@ -520,7 +532,7 @@ const EmployeeForm = () => {
             </div>
           </div>
 
-          {/* Skills & Projects Section */}
+          {/* Skills & Projects*/}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Skills & Projects</h3>
 
@@ -532,7 +544,7 @@ const EmployeeForm = () => {
                 <Input
                   id="skills"
                   name="skills"
-                  value={skillsString}
+                  value={sNpString.skillsString}
                   onChange={handleSkillsChange}
                   placeholder="React, JavaScript, CSS, etc."
                 />
@@ -545,7 +557,7 @@ const EmployeeForm = () => {
                 <Input
                   id="projects"
                   name="projects"
-                  value={projectsString}
+                  value={sNpString.projectsString}
                   onChange={handleProjectsChange}
                   placeholder="Project A, Project B, etc."
                 />
@@ -553,7 +565,7 @@ const EmployeeForm = () => {
             </div>
           </div>
 
-          {/* Emergency Contact Section */}
+          {/* Emergency Contact */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Emergency Contact</h3>
 
@@ -611,7 +623,11 @@ const EmployeeForm = () => {
             type="button"
             variant="outline"
             onClick={() =>
-              navigate(isEditMode ? `/employees/${id}` : "/employees")
+              navigate(
+                isEditMode
+                  ? `/dashboard/employees/${id}`
+                  : "/dashboard/employees"
+              )
             }
           >
             Cancel

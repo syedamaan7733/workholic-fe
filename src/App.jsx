@@ -31,7 +31,7 @@ function App() {
       <Router>
         <AuthProvider>
           <Routes>
-            {/* Public routes */}
+            {/* Public route */}
             <Route path="/auth" element={<AuthForm />} />
 
             {/* Redirection*/}

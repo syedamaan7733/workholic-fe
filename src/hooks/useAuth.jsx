@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@/src/services/auth.api";
 import { authToken } from "@/src/services/token.service";
+import { toast } from "sonner";
 
 export function useUser() {
   const queryClient = useQueryClient();
@@ -28,7 +29,11 @@ export function useRegister() {
     onSuccess: (data) => {
       authToken.setToken(data.accessTkn);
       queryClient.setQueryData(["user"], data.user); // Set cache
+      toast.success("Registered Successfully.");
       navigate("/dashboard");
+    },
+    onError: (err) => {
+      toast.error(err.response.data.message);
     },
   });
 }
@@ -41,13 +46,16 @@ export function useLogin() {
   return useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      console.log(data.user);
-
       authToken.setToken(data.accessTkn);
       queryClient.setQueryData(["user"], data.user); // Set cache
-      queryClient.invalidateQueries(["user"]); // Ensure fresh data
+      queryClient.invalidateQueries(["user"]); //  fresh data getting
+      toast.success(`Welcome back! ${data.user.name}`);
+
       navigate("/dashboard");
     },
+    onError: (err) => {
+        toast.error(err.response.data.message);
+      },
   });
 }
 
@@ -59,7 +67,7 @@ export function useLogout() {
   return useMutation({
     mutationFn: authApi.logout,
     onSettled: () => {
-      // Use token service
+ 
       authToken.removeToken();
       queryClient.setQueryData(["user"], null);
       queryClient.invalidateQueries();

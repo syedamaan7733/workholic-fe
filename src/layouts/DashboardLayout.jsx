@@ -1,14 +1,16 @@
 import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { UserPlus, Users, LayoutDashboard, LogOut } from "lucide-react";
+import { useAuth } from "@/src/context/auth.context";
 
 const DashboardLayout = () => {
+  const { user } = useAuth();
   const location = useLocation();
 
   const isActive = (path) => {
     return location.pathname === path ? "bg-blue-100 text-blue-800" : "";
   };
-
+  console.log("layout", user.user);
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}

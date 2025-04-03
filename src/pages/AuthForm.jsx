@@ -21,7 +21,7 @@ import { useAuth } from "@/src/context/auth.context";
 import { toast } from "sonner";
 
 const AuthForm = () => {
-  const { isAuthenticated, isLoading, login, register } = useAuth();
+  const { isAuthenticated, isLoading, error, login, register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -36,8 +36,6 @@ const AuthForm = () => {
       : setFormData({ name: "", email: "", password: "" });
   }, [activeTab]);
 
-  // Remove the useNavigate import and usage - the navigation is handled in the hooks
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -48,40 +46,43 @@ const AuthForm = () => {
   };
 
   const handlePassword = (e) => {
-    const { name, value } = e.target;
+    try {
+      const { name, value } = e.target;
 
-    const updatedPass = { ...password, [name]: value || "" };
-    setPassword(updatedPass);
+      const updatedPass = { ...password, [name]: value || "" };
+      setPassword(updatedPass);
 
-    if (
-      updatedPass.registerPass &&
-      updatedPass.registerPass === updatedPass.confirmPassword
-    ) {
-      setFormData({ ...formData, password: updatedPass.confirmPassword });
-    } else if (
-      updatedPass.registerPass &&
-      updatedPass.registerPass !== updatedPass.confirmPassword
-    ) {
-      setFormData({ ...formData, password: "" });
+      if (
+        updatedPass.registerPass &&
+        updatedPass.registerPass === updatedPass.confirmPassword
+      ) {
+        setFormData({ ...formData, password: updatedPass.confirmPassword });
+      } else if (
+        updatedPass.registerPass &&
+        updatedPass.registerPass !== updatedPass.confirmPassword
+      ) {
+        setFormData({ ...formData, password: "" });
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
-console.log(isAuthenticated);
+  console.log("err", error);
+  console.log(isAuthenticated);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (activeTab === "login") {
       login({ email: formData.email, password: formData.password });
-      toast.success("Logging in..."); // Provide feedback while the async operation completes
+     
     } else {
       register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
       });
-      toast.success("Creating account..."); // Provide feedback while the async operation completes
     }
-    // Remove navigate('/dashboard') - this is now handled in the hooks
   };
 
   return (

@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const {
     data: user,
+    error:userError,
     isLoading: isLoadingUser,
     isSuccess: isUserSucess,
     isError: isUserError,
@@ -22,6 +23,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
     isLoading: isLoadingUser,
     isError: isUserError,
+    error: userError,
     isSuccess: isUserSucess,
     login: loginMutation.mutate,
     register: registerMutation.mutate,

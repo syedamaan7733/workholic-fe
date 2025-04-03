@@ -1,4 +1,3 @@
-// src/pages/EmployeeDetail.jsx
 
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -57,7 +56,7 @@ const EmployeeDetail = () => {
             <p>Error: {error.message}</p>
             <Button
               variant="outline"
-              onClick={() => navigate("/employees")}
+              onClick={() => navigate("/dashboard/employees")}
               className="mt-4"
             >
               Back to Employees
@@ -104,14 +103,14 @@ const EmployeeDetail = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate("/employees")}
+          onClick={() => navigate("/dashboard/employees")}
           className="flex items-center"
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
         </Button>
 
         <Button
-          onClick={() => navigate(`/employees/${id}/edit`)}
+          onClick={() => navigate(`/dashboard/employees/${id}/edit`)}
           className="flex items-center"
         >
           <FileEdit className="mr-2 h-4 w-4" /> Edit Employee

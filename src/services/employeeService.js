@@ -2,6 +2,7 @@
 // I'll use mock data for demonstration
 
 import axios from "axios";
+import { authToken } from "./token.service";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -486,7 +487,6 @@ export const URL = "http://localhost:8080/api/v1";
 
 export const getEmployees = async () => {
   try {
-    await delay(500); // Simulate network delay
     const response = await axios.get(`${URL}/emp/getAll`);
     console.log(response);
     return [...response.data.employees];
@@ -505,7 +505,16 @@ export const getEmployeeById = async (id) => {
   return response.data;
 };
 
-export const createEmployee = async (employeeData) => {};
+export const createEmployee = async (employeeData) => {
+  const token = authToken.getToken();
+  const response = await axios.post(`${URL}/emp/create`, employeeData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;s
+};
 
 export const updateEmployee = async (id, employeeData) => {
   await delay(800);
