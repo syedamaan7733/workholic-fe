@@ -75,7 +75,6 @@ const AuthForm = () => {
 
     if (activeTab === "login") {
       login({ email: formData.email, password: formData.password });
-     
     } else {
       register({
         name: formData.name,
@@ -90,7 +89,7 @@ const AuthForm = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Welcome Back
+            {activeTab === "login" ? "Welcome Back" : "Get Started"}
           </CardTitle>
           <CardDescription className="text-center">
             Enter your credentials to access your account

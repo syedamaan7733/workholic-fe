@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -27,6 +26,7 @@ import {
   MapPin,
   UserCog,
   Briefcase,
+  Loader2,
 } from "lucide-react";
 
 import { getEmployeeById } from "../services/employeeService";
@@ -45,7 +45,12 @@ const EmployeeDetail = () => {
   });
 
   if (isLoading) {
-    return <div className="text-center py-4">Loading employee details...</div>;
+    return (
+      <div className="text-center py-4 h-screen flex flex-col justify-center items-center">
+        <Loader2 size={'45px'} className="animate-spin" />
+        <h2>Loading please wait...</h2>
+      </div>
+    );
   }
 
   if (error) {

@@ -11,9 +11,9 @@ console.log("from protected route", isAuthenticated);
 
   if (isLoading) {
     return (
-      <div>
+      <div className="h-screen flex justify-center items-center">
         {" "}
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+        <Loader2 size={45} className=" text-primary animate-spin" />
       </div>
     );
   }
