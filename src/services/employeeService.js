@@ -483,7 +483,7 @@ const employees = [
 ];
 
 // export const URL = "http://localhost:8080/api/v1";
-const URL = "https://workoholic-api-x5rg.vercel.app/api/v1";
+export const URL = "https://workoholic-api-x5rg.vercel.app/api/v1";
 
 export const getEmployees = async () => {
   try {

@@ -1,6 +1,7 @@
 import axios from "axios";
-import { URL } from "./employeeService";
+
 import { authToken } from "./token.service";
+import { URL } from "./employeeService";
 
 const api = axios.create({
   baseURL: `${URL}/auth`,
