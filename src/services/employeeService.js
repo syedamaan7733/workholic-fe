@@ -513,22 +513,32 @@ export const createEmployee = async (employeeData) => {
     },
   });
 
-  return response.data;s
+  return response.data;
+  s;
 };
 
 export const updateEmployee = async (id, employeeData) => {
-  await delay(800);
-  // In a real app, you'd make a PUT/PATCH request to your API
-  return {
-    id,
-    ...employeeData,
-  };
+  const token = authToken.getToken();
+
+  const response = await axios.patch(`${URL}/emp/${id}`, employeeData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
 };
 
 export const deleteEmployee = async (id) => {
-  await delay(600);
-  // In a real app, you'd make a DELETE request to your API
-  return { success: true };
+  // console.log("from service", id);
+  const token = authToken.getToken();
+
+  const response = await axios.delete(`${URL}/emp/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 };
 
 // file upload

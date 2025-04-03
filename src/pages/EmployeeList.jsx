@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -36,11 +36,14 @@ import { Search, MoreHorizontal, Plus, FileEdit, Trash2 } from "lucide-react";
 
 import { getEmployees } from "../services/employeeService";
 import Spinner from "@/src/components/ui/spinner";
+import DeleteAlert from "@/src/components/DeleteAlert";
 
 const EmployeeList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
+  const [delAlert, setdelAlert] = useState(false);
+  const [delId, setDelID] = useState(null);
 
   // Fetch employees with TanStack Query
   const {
@@ -51,6 +54,13 @@ const EmployeeList = () => {
     queryKey: ["employees"],
     queryFn: getEmployees,
   });
+
+  
+
+  const submitDelEmp = (id) => {
+    setdelAlert(!delAlert);
+    setDelID(id);
+  };
 
   // Filter employees based on search term and department
   const filteredEmployees = employees.filter((employee) => {
@@ -67,10 +77,9 @@ const EmployeeList = () => {
     return matchesSearch && matchesDepartment;
   });
 
-
   const departments = [...new Set(employees.map((emp) => emp.department))];
 
-// coloring the badge
+  // coloring the badge
   const getStatusColor = (status) => {
     switch (status) {
       case "Active":
@@ -87,6 +96,9 @@ const EmployeeList = () => {
   return (
     <Card className="w-full">
       <CardHeader>
+        {delAlert && (
+          <DeleteAlert delAlert={delAlert} setdelAlert={setdelAlert} id={delId} />
+        )}
         <div className="flex justify-between items-center">
           <div>
             <CardTitle>Employees</CardTitle>
@@ -156,7 +168,9 @@ const EmployeeList = () => {
                     <TableRow
                       key={employee._id}
                       className="cursor-pointer hover:bg-gray-50"
-                      onClick={() => navigate(`/dashboard/employees/${employee._id}`)}
+                      onClick={() =>
+                        navigate(`/dashboard/employees/${employee._id}`)
+                      }
                     >
                       <TableCell className="font-medium">
                         {employee.firstName} {employee.lastName}
@@ -182,7 +196,9 @@ const EmployeeList = () => {
                             <DropdownMenuItem
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/dashboard/employees/${employee._id}/edit`);
+                                navigate(
+                                  `/dashboard/employees/${employee._id}/edit`
+                                );
                               }}
                             >
                               <FileEdit className="mr-2 h-4 w-4" />
@@ -192,10 +208,7 @@ const EmployeeList = () => {
                               className="text-red-600"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // In a real app, add a confirmation dialog
-                                alert(
-                                  `Delete ${employee.firstName} ${employee.lastName}?`
-                                );
+                                submitDelEmp(employee._id);
                               }}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />

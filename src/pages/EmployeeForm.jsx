@@ -56,7 +56,7 @@ const EmployeeForm = () => {
     queryFn: () => getEmployeeById(id),
     enabled: isEditMode,
     onSuccess: (data) => {
-      //  formatted date
+      // Format the date to YYYY-MM-DD for the input field
       const formattedDate = data.hireDate
         ? new Date(data.hireDate).toISOString().split("T")[0]
         : "";
@@ -64,7 +64,7 @@ const EmployeeForm = () => {
       setFormData({
         ...data,
         hireDate: formattedDate,
-
+        // Convert numeric salary to string for form input
         salary: data.salary.toString(),
       });
     },
@@ -91,7 +91,7 @@ const EmployeeForm = () => {
         skills: [],
         projects: [],
       };
-  // form data state
+  // State to store form data
   const [formData, setFormData] = useState(initalValue);
   const [sNpString, setsNpString] = useState({
     skillsString: employeeData?.skills ? employeeData.skills.join(" ,") : "",
@@ -105,10 +105,7 @@ const EmployeeForm = () => {
     mutationFn: (submissionData) => createEmployee(submissionData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-      toast({
-        title: "Success",
-        description: "Employee created successfully",
-      });
+      toast.success(' "Employee created successfully"');
       navigate("/dashboard/employees");
     },
     onError: (error) => {
@@ -126,26 +123,20 @@ const EmployeeForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       queryClient.invalidateQueries({ queryKey: ["employee", id] });
-      toast({
-        title: "Success",
-        description: "Employee updated successfully",
-      });
+      toast.success("Employee updated successfully");
       navigate(`/dashboard/employees/${id}`);
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: `Failed to update employee: ${error.message}`,
-      });
+      toast.error(`Failed to update employee: ${error.message}`);
     },
   });
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name.includes(".")) {
-      //handling the nested object
+      // Handle nested objects like emergencyContact.name
       const [parent, child] = name.split(".");
       setFormData({
         ...formData,
@@ -162,6 +153,7 @@ const EmployeeForm = () => {
     }
   };
 
+  // Handle select changes
   const handleSelectChange = (name, value) => {
     setFormData({
       ...formData,
@@ -176,9 +168,10 @@ const EmployeeForm = () => {
       .map((skill) => skill.trim())
       .filter(Boolean);
 
+    // Update the string state correctly
     setsNpString({
-      ...sNpString,
-      skillsString: skillsString,
+      ...sNpString, // Spread the existing object properties
+      skillsString: skillsString, // Update only the skillsString property
     });
 
     setFormData({
@@ -196,8 +189,8 @@ const EmployeeForm = () => {
 
     // Update the string state correctly
     setsNpString({
-      ...sNpString,
-      projectsString: projectsString,
+      ...sNpString, // Spread the existing object properties
+      projectsString: projectsString, // Update only the projectsString property
     });
 
     setFormData({
@@ -210,6 +203,7 @@ const EmployeeForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Basic validation
     if (!formData.firstName || !formData.lastName || !formData.email) {
       toast({
         variant: "destructive",
@@ -219,6 +213,7 @@ const EmployeeForm = () => {
       return;
     }
 
+    // Prepare submission data - convert string salary to number
     const submissionData = {
       ...formData,
       salary: parseFloat(formData.salary) || 0,
@@ -269,10 +264,6 @@ const EmployeeForm = () => {
       });
       return;
     }
-
-    console.log("check");
-
-    // setfile(uploadFile);
 
     uploadMutation.mutate(uploadFile);
   };
@@ -369,7 +360,7 @@ const EmployeeForm = () => {
 
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-6">
-          {/* Personal info */}
+          {/* Personal Information Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Personal Information</h3>
 
@@ -441,7 +432,7 @@ const EmployeeForm = () => {
             </div>
           </div>
 
-          {/* Work infgo */}
+          {/* Work Information Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Work Information</h3>
 
@@ -532,7 +523,7 @@ const EmployeeForm = () => {
             </div>
           </div>
 
-          {/* Skills & Projects*/}
+          {/* Skills & Projects Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Skills & Projects</h3>
 
@@ -565,7 +556,7 @@ const EmployeeForm = () => {
             </div>
           </div>
 
-          {/* Emergency Contact */}
+          {/* Emergency Contact Section */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Emergency Contact</h3>
 

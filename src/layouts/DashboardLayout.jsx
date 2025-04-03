@@ -4,7 +4,7 @@ import { UserPlus, Users, LayoutDashboard, LogOut } from "lucide-react";
 import { useAuth } from "@/src/context/auth.context";
 
 const DashboardLayout = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const isActive = (path) => {
@@ -14,14 +14,16 @@ const DashboardLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
+      <div className="w-0 md:w-64 transition-all bg-white shadow-md">
         <div className="p-6">
           <Link
             to="/"
             className={`flex items-center hover:pointer
           `}
           >
-            <h1 className="text-2xl font-bold text-blue-800">EMS Admin</h1>
+            <h1 className="hidden md:flex md:text-2xl font-bold text-blue-800">
+              EMS Admin
+            </h1>
           </Link>
         </div>
         <nav className="mt-6">
@@ -61,8 +63,11 @@ const DashboardLayout = () => {
             </li>
           </ul>
         </nav>
-        <div className="absolute bottom-0 w-64 p-6">
-          <button className="flex items-center text-gray-600 hover:text-red-600">
+        <div className="relative md:absolute md:bottom-0 md:left-0 w-64  bottom-[55%] left-  p-6">
+          <button
+            onClick={logout}
+            className="flex items-center bg-primary md:bg-transparent text-stone-200 md:border-2  md:text-primary px-4 py-2 rounded-2xl md:rounded-none hover:text-red-600"
+          >
             <LogOut className="mr-3 h-5 w-5" />
             <span>Logout</span>
           </button>

@@ -71,7 +71,7 @@ export function useLogout() {
       authToken.removeToken();
       queryClient.setQueryData(["user"], null);
       queryClient.invalidateQueries();
-      navigate("/login");
+      navigate("/auth");
     },
   });
 }
